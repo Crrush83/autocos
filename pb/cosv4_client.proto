@@ -1,0 +1,1717 @@
+import "cos_comm.proto";
+package ClientCos;
+
+
+message CosAppMsg
+{
+	required uint32 seq = 1;
+	required AppMsg body = 2;
+}
+
+message AppMsg
+{
+	enum Type
+	{		
+		CosReqMsg = 1;
+		CosRspMsg = 2;		
+	}
+	required Type type = 1;	
+
+	extensions 100 to 10000;
+}
+
+extend AppMsg
+{
+	optional CosReqMsg CosReqMsg_body = 100;
+	optional CosRspMsg CosRspMsg_body = 101;
+}
+
+//- 请求协议体定义.
+message CosReqMsg
+{
+	optional bytes request_id = 1; //客户端请求的ID
+	optional bytes cgi_attr   = 2; //访问者信息及鉴权信息; CgiArgs序列化;	
+	optional bytes cgi_params = 3; //CgiParams序列化;
+	
+	enum SubType
+	{
+	    Invalid = 0;
+		
+		BucketCreateReq  	= 10;
+		BucketAttrModifyReq = 11;
+		BucketAttrQueryReq  = 12;
+		
+		DirCreateReq 	 	= 13;
+		
+		ObjAttrQueryReq 	= 14; 
+		ObjAttrModifyReq 	= 15;
+		
+		DeleteReq  	 		= 16;//删目录/bucket
+		ListReq  	 		= 17;
+		
+				
+		AppAttrQueryReq 	= 18;//app属性查询接口，暂时只能查询ak、sk
+		AppAttrModifyReq 	= 19;//app属性修改接口，暂时只能修改ak、sk
+
+		PreviewFileAttrQueryReq = 20;//预览平台查询文件属性
+		
+		ObjModTimeStampReq		= 21;//割接完成后修改ctime和mtime，保持与v3一致
+		ListMutiobjReq  	 		= 22; // list分块未完成的文件
+		UnfinObjAttrModifyReq = 23;//修改未完成文件属性
+		FileBatchDelReq = 24; //批量删除
+		ListObjVerReq = 25;//list多版本
+		DelExpireFileReq = 26;
+		FileDelReq       = 27;  //Abort; 专用于生命周期
+		SpObjAttrModifyReq = 28;//专用于跨区域复制 内部模块
+		UploadDelmarkerReq = 29; //专用于跨区域复制
+		ExpireFileDelVerReq      = 30;//专用于过期删除
+		ExpireFileDelNoVerReq    = 31;//专用于过期删除
+		SetBucketPriAttrReq      = 32; //内部专用bucket中没文件时设置nofile
+		FileDownToCASReq         = 33; //文件降冷到CAS
+		CasObjAttrModifyReq      = 34;
+		CasFileRecoverDelReq     = 35;
+		CasObjRestoreErrReq      = 36;
+		SpObjAttrQueryReq        = 37; //内部模块使用
+		ObjModStorageTypeReq     = 38;
+		SetBucketWebsiteInfoReq  = 39;
+		SetCamAttrReq            = 40;
+		BucketCamAuthQueryReq    = 41; 
+		AppCamAuthQueryReq       = 42;
+		FileUnfinishAttrQueryReq = 43; //查询分块未完成对象索引
+		ReduceLifecycleReq       = 44; //生命周期使用; 每天一次性减掉待处理的存储量信息
+		RetrieveLifecycleReq     = 45; //生命周期使用; 若查询对象不存在, 需要追回存储量信息
+		SetObjAclReq = 46;
+		GetObjAclReq = 47;
+		SetBucketUinReq = 48;
+		GetBucketUinReq = 49;
+		ListDirectReq = 50;  //cosmerge-master
+		CheckObjAclReq = 51;
+		CasObjRestoreFinReq = 52;
+		SetBucketLockReq = 53;
+		GetBucketLockReq = 54;
+		SetBucketInventoryReq = 55;
+		GetBucketInventoryReq = 56;
+		COSTransToCASReq = 57;
+		SetMigrateReq = 90; //设置开始割接接口
+		DelNoHashFileReq = 91; //迁移专用
+		MigrateFinFileReq = 92; //cos4.0->4.2专用接口，临时接口。使用完后下掉
+		MigrateUnFinFileReq = 93;
+	}
+	
+	required SubType sub_type = 10;
+	
+	optional BucketCreateReq BucketCreateReq_body = 21;
+	optional BucketAttrModifyReq BucketAttrModifyReq_body = 22;
+	optional BucketAttrQueryReq BucketAttrQueryReq_body = 23;
+	
+	optional DirCreateReq DirCreateReq_body = 24;
+	optional ObjAttrQueryReq ObjAttrQueryReq_body = 25; 
+	optional ObjAttrModifyReq ObjAttrModifyReq_body = 26;
+	
+	optional DeleteReq DeleteReq_body = 27;
+	optional ListReq ListReq_body = 28;
+	
+	optional AppAttrQueryReq AppAttrQueryReq_body = 29;
+	optional AppAttrModifyReq AppAttrModifyReq_body = 30;
+	
+	optional PreviewFileAttrQueryReq PreviewFileAttrQueryReq_body = 31;
+	
+	optional ObjModTimeStampReq ObjModTimeStampReq_body = 32;
+	
+	optional ListMutiobjReq ListMutiobjReq_body = 33;
+	optional UnfinObjAttrModifyReq UnfinObjAttrModifyReq_body = 34;
+	optional FileBatchDelReq FileBatchDelReq_body = 35;
+	optional ListObjVerReq ListObjVerReq_body = 36;
+	optional DelExpireFileReq DelExpireFileReq_body = 37;
+	optional FileDelReq FileDelReq_body = 38;
+	optional SpObjAttrModifyReq SpObjAttrModifyReq_body = 39;
+	optional UploadDelmarkerReq UploadDelmarkerReq_body = 40;
+	optional ExpireFileDelVerReq ExpireFileDelVerReq_body = 41;
+	optional ExpireFileDelNoVerReq ExpireFileDelNoverReq_body = 42;
+	optional SetBucketPriAttrReq SetBucketPriAttrReq_body = 43;
+	optional FileDownToCASReq FileDownToCASReq_body = 44;
+	optional CasObjAttrModifyReq CasObjAttrModifyReq_body = 45;
+	optional CasFileRecoverDelReq CasFileRecoverDelReq_body = 46;
+	optional CasObjRestoreErrReq CasObjRestoreErrReq_body = 47;
+	optional SpObjAttrQueryReq SpObjAttrQueryReq_body = 48;
+	optional ObjModStorageTypeReq ObjModStorageTypeReq_body = 49;
+	optional SetBucketWebsiteInfoReq SetBucketWebsiteInfoReq_body = 50;
+	optional SetCamAttrReq  SetCamAttrReq_body = 51;
+	optional BucketCamAuthQueryReq BucketCamAuthQueryReq_body = 52;
+	optional AppCamAuthQueryReq AppCamAuthQueryReq_body = 53;
+	optional FileUnfinishAttrQueryReq FileUnfinishAttrQueryReq_body = 54;
+	optional ReduceLifecycleReq ReduceLifecycleReq_body = 55;
+	optional RetrieveLifecycleReq RetrieveLifecycleReq_body = 56;
+	optional SetObjAclReq SetObjAclReq_body = 57;
+	optional GetObjAclReq GetObjAclReq_body = 58;
+	optional SetBucketUinReq SetBucketUinReq_body = 59;
+	optional GetBucketUinReq GetBucketUinReq_body = 60;
+	optional ListDirectReq ListDirectReq_body = 61;
+	optional CheckObjAclReq CheckObjAclReq_body = 62;
+	optional CasObjRestoreFinReq CasObjRestoreFinReq_body = 63;
+	optional SetBucketLockReq SetBucketLockReq_body = 64;
+	optional GetBucketLockReq GetBucketLockReq_body = 65;
+	optional SetBucketInventoryReq SetBucketInventoryReq_body = 66;
+	optional GetBucketInventoryReq GetBucketInventoryReq_body = 67;
+	optional COSTransToCASReq COSTransToCASReq_body = 68;
+	optional SetMigrateReq SetMigrateReq_body = 90;
+	optional DelNoHashFileReq DelNoHashFileReq_body = 91;
+	optional MigrateFinFileReq MigrateFinFileReq_body = 92;
+	optional MigrateUnFinFileReq MigrateUnFinFileReq_body = 93;
+}
+
+//- 响应协议体定义.
+message CosRspMsg
+{
+	required int32 retcode = 1;
+	required string retmsg = 2;
+
+	enum SubType
+	{
+	    Invalid = 0;
+		
+		BucketCreateRsp  = 10;
+		BucketAttrModifyRsp = 11;
+		BucketAttrQueryRsp  = 12;
+		
+		DirCreateRsp 	 = 13;
+		ObjAttrQueryRsp = 14;
+		ObjAttrModifyRsp  = 15;
+		
+		DeleteRsp  	 = 16;
+		ListRsp  	 = 17;
+		
+		AppAttrQueryRsp = 18;
+		AppAttrModifyRsp = 19;
+		
+		PreviewFileAttrQueryRsp = 20;
+		
+		ObjModTimeStampRsp = 21;
+		
+		ListMutiobjRsp  	 = 22;
+		UnfinObjAttrModifyRsp = 23;
+		FileBatchDelRsp = 24;
+		ListObjVerRsp = 25;
+		DelExpireFileRsp = 26;
+		FileDelRsp = 27;
+		ObjAttrModifyRsp_sp = 28;
+		UploadDelmarkerRsp = 29;
+		ExpireFileDelVerRsp = 30;
+		ExpireFileDelNoverRsp = 31;
+		SetBucketPriAttrRsp = 32;
+		FileDownToCASRsp = 33;
+		CasObjAttrModifyRsp = 34;
+		CasFileRecoverDelRsp = 35;
+		CasObjRestoreErrRsp = 36;
+		SpObjAttrQueryRsp = 37;
+		ObjModStorageTypeRsp = 38;
+		SetBucketWebsiteInfoRsp = 39;
+		SetCamAttrRsp = 40;
+		BucketCamAuthQueryRsp = 41;
+		AppCamAuthQueryRsp = 42;
+		FileUnfinishAttrQueryRsp = 43;
+		ReduceLifecycleRsp = 44;
+		RetrieveLifecycleRsp = 45;
+		SetObjAclRsp = 46;
+		GetObjAclRsp = 47;
+		SetBucketUinRsp = 48;
+		GetBucketUinRsp = 49;
+		ListDirectRsp  = 50;
+		CheckObjAclRsp = 51;
+		CasObjRestoreFinRsp = 52;
+		SetBucketLockRsp = 53;
+		GetBucketLockRsp = 54;
+		SetBucketInventoryRsp = 55;
+		GetBucketInventoryRsp = 56;
+		COSTransToCASRsp = 57;
+		SetMigrateRsp = 90;
+		DelNoHashFileRsp = 91;
+		MigrateFinFileRsp = 92;
+		MigrateUnFinFileRsp = 93;
+	}
+	
+	optional SubType sub_type = 10;
+	
+	optional BucketCreateRsp BucketCreateRsp_body = 21;
+	optional BucketAttrModifyRsp BucketAttrModifyRsp_body = 22;
+	optional BucketAttrQueryRsp BucketAttrQueryRsp_body = 23;
+	
+	optional DirCreateRsp DirCreateRsp_body = 24;
+	
+	optional ObjAttrQueryRsp ObjAttrQueryRsp_body = 25; 
+	optional ObjAttrModifyRsp ObjAttrModifyRsp_body = 26;
+	
+	optional DeleteRsp DeleteRsp_body = 27;
+	optional ListRsp ListRsp_body = 28;
+	
+	optional AppAttrQueryRsp AppAttrQueryRsp_body = 29;
+	optional AppAttrModifyRsp AppAttrModifyRsp_body = 30;
+	
+	optional PreviewFileAttrQueryRsp PreviewFileAttrQueryRsp_body = 31;
+	
+	optional ObjModTimeStampRsp ObjModTimeStampRsp_body = 32;
+	optional ListMutiobjRsp  ListMutiobjRsp_body = 33;
+	optional UnfinObjAttrModifyRsp UnfinObjAttrModifyRsp_body = 34;
+	optional FileBatchDelRsp FileBatchDelRsp_body = 35;
+	optional ListObjVerRsp ListObjVerRsp_body = 36;
+	optional DelExpireFileRsp DelExpireFileRsp_body = 37;
+	optional FileDelRsp FileDelRsp_body = 38;
+	optional SpObjAttrModifyRsp SpObjAttrModifyRsp_body = 39;
+	optional UploadDelmarkerRsp UploadDelmarkerRsp_body = 40;
+	optional ExpireFileDelVerRsp ExpireFileDelVerRsp_body = 41;
+	optional ExpireFileDelNoverRsp ExpireFileDelNoverRsp_body = 42;
+	optional SetBucketPriAttrRsp SetBucketPriAttrRsp_body = 43;
+	optional FileDownToCASRsp FileDownToCASRsp_body = 44;
+	optional CasObjAttrModifyRsp CasObjAttrModifyRsp_body = 45;
+	optional CasFileRecoverDelRsp CasFileRecoverDelRsp_body = 46;
+	optional CasObjRestoreErrRsp CasObjRestoreErrRsp_body = 47;
+	optional SpObjAttrQueryRsp SpObjAttrQueryRsp_body = 48;
+	optional ObjModStorageTypeRsp ObjModStorageTypeRsp_body = 49;
+	optional SetBucketWebsiteInfoRsp SetBucketWebsiteInfoRsp_body = 50;
+	optional SetCamAttrRsp SetCamAttrRsp_body = 51;
+	optional BucketCamAuthQueryRsp BucketCamAuthQueryRsp_body = 52;
+	optional AppCamAuthQueryRsp AppCamAuthQueryRsp_body = 53;
+	optional FileUnfinishAttrQueryRsp FileUnfinishAttrQueryRsp_body = 54;
+	optional ReduceLifecycleRsp ReduceLifecycleRsp_body = 55;
+	optional RetrieveLifecycleRsp RetrieveLifecycleRsp_body = 56;
+	optional SetObjAclRsp SetObjAclRsp_body = 57;
+	optional GetObjAclRsp GetObjAclRsp_body = 58;
+	optional SetBucketUinRsp SetBucketUinRsp_body = 59;
+	optional GetBucketUinRsp GetBucketUinRsp_body = 60;
+	optional ListDirectRsp ListDirectRsp_body = 61;
+	optional CheckObjAclRsp CheckObjAclRsp_body = 62;
+	optional CasObjRestoreFinRsp CasObjRestoreFinRsp_body = 63;
+	optional SetBucketLockRsp SetBucketLockRsp_body = 64;
+	optional GetBucketLockRsp GetBucketLockRsp_body = 65;
+	optional SetBucketInventoryRsp SetBucketInventoryRsp_body = 66;
+	optional GetBucketInventoryRsp GetBucketInventoryRsp_body = 67;
+	optional COSTransToCASRsp COSTransToCASRsp_body = 68;
+	optional SetMigrateRsp SetMigrateRsp_body = 90;
+	optional DelNoHashFileRsp DelNoHashFileRsp_body = 91;
+	optional MigrateFinFileRsp MigrateFinFileRsp_body = 92;
+	optional MigrateUnFinFileRsp MigrateUnFinFileRsp_body = 93;
+}
+
+
+enum MigrateStatus
+{
+	Migrate_Unknown = 0; //未启动割接
+	Migrate_started = 1; //开始割接
+	Migrate_fin = 2;     //割接完成
+}
+message Migrateinfo
+{
+	optional MigrateStatus status = 1; 
+	optional uint32 start_time = 2;
+	optional uint32 fin_time = 3;
+}
+//封装外部属性。
+message ExtraAttr
+{
+	optional bytes crossregional = 1;//跨区域复制属性 
+	optional bytes ruleobj = 2;      //生命周期
+	optional uint32 rule_mtime = 3;  //生命周期规则设置/修改时间
+}
+
+message ObjExpireAttr
+{
+	optional uint32 expired_time = 1 [default = 0]; //obj 过期时间
+	optional bytes rulename = 2;
+}
+message UploadAttr
+{
+	repeated CustomHeader customheader = 1;//自定义Header
+	repeated ObjTag taglist = 2; //自定义tag
+	optional bytes real_sha = 3;
+}
+enum CASRestoreTier
+{
+    Tier_Unknown = 0;
+    Tier_Bulk = 1; //慢速回热，5-12h
+    Tier_Expedited = 2; //快速回热, 1-5min
+    Tier_Standard = 3; //标准回热, 4-6h
+}
+message CasInfo
+{
+	optional uint32 status = 1; // 1为仅存于cas中；2为restore中；3为restore完成，cos+cas都有 4restore失败
+	optional bytes casfilekey = 2;
+	optional bytes archive_id = 3; //访问cas需要的archive_id
+	optional uint64 expired_time = 4; //restore产生的临时文件在cos中的过期时间
+	optional uint32 cas_status = 5; //该字段仅用于实际文件内容存于cos中但计费是归档类型的对象(cas直传项目)。为1表示对象未发起restore不允许访问; 2表示允许访问
+	optional uint32 cas_type = 6; //新增，标记是否是降冷cas，如果是，则改字段是1
+	optional uint64 restore_ctime = 7; //新增，发起restore时间
+	optional CASRestoreTier restore_tier = 8; //新增，发起restore 的状态
+}
+//---------------------------------------------------------------------------------------------------------
+//- 描述:创建bucketapp下bucket数目限制为200.创建bucket必需携带权限标识
+//- 效果:用户索引条数增加
+//- 注：app下只能创建目录(bucket),不能创建文件
+//- 注：bucket id为小写字母、数字，长度最大40字节
+//- 注：内置创建app，app限制为数字
+//- 注: path的总长度限制为1024字节
+//- 注：refer、cname只支持字母、数字，refer可支持星号，最大长度255
+//- 注：reservedattr 可用于存放回源域名、封面开关
+//---------------------------------------------------------------------------------------------------------
+message BucketCreateReq
+{
+	optional bytes path = 1;                   //创建目录的全路径,以"/"分割,如"/a/b/c/",最大1024字节,路径已/appid/开头
+	optional bytes biz_attr = 2;            	//bucket属性，业务端维护,最长5K字节
+	optional Authority auth = 3;				//权限类别
+	optional KeyPair key= 4;
+	repeated string whiterefer = 5; //单个长度限制为255字节,bucket所有属性,数组长度10，只支持数字、字母、星号
+	repeated string blackrefer = 6; //单个长度限制为255字节,bucket所有属性,数组长度10，只支持数字、字母、星号，黑名单
+	repeated string cname = 7; //单个长度限制为255字节,bucket所有属性,数组长度10，只支持数字、字母
+	repeated ReservedAttr reservedattr = 8;//新增属性
+	repeated CorsRule corsrule = 9; //CORS 配置规则列表
+	optional OwnerInfo bucketOwner = 10;
+	optional bool is_slot = 11; // 支持高QPS设置，一经设置不能修改，true: 开启高QPS
+}
+
+message BucketCreateRsp
+{
+	optional uint64 ctime = 1;       //bucket创建时间
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:修改目录属性，包括用户自定义属性和bucket的权限
+//- 效果:改变目录的用户自定义属性或是bucket、用户的权限
+//- 注：只有bucket的权限会生效
+//- 注: path的总长度限制为1024字节
+//- modflag：按位识别
+//-	0x01:修改authority; 1
+//-	0x02:修改biz_attr; 2
+//-	0x04:修改禁止访问标志(forbid) 4
+//- 0x08:修改whiterefer 8
+//- 0x10:修改cname 16
+//- 0x20:修改blackrefer 32
+//- 0x40:修改reservedattr（填写需要修改的项即可，后台有则修改该项，没有则添加） 64
+//- 0x80：修改corsrule, 覆盖写 128
+//- 0x100: 修改CrossRegional, 跨区域复制信息256 
+//- 0x200:修改bucket多版本属性512
+//- 0x400:修改bucket tag
+//- 0x800:修改ruleobj
+//- 0x1000:修改LFAttr
+//- 0x2000:修改refer_able
+//- 0x4000:修改emptyreferconfig
+//---------------------------------------------------------------------------------------------------------
+message BucketAttrModifyReq
+{	
+	optional bytes path = 1;
+	optional uint32 modflag = 2;			
+	optional Authority auth = 3;
+	optional bytes biz_attr = 4; //最长5K
+	optional uint32 forbid = 5;//禁止访问标志，0:可以访问，0x01：禁止读访问，0x02：禁止写访问
+	repeated string whiterefer = 6; //单个长度限制为256字节,bucket所有属性,数组长度10,白名单
+	repeated string blackrefer = 7; //单个长度限制为256字节,bucket所有属性,数组长度10，黑名单
+	repeated string cname = 8; //单个长度限制为256字节,bucket所有属性,数组长度10
+	repeated ReservedAttr reservedattr = 9;//需要修改的reserved属性
+	repeated CorsRule corsrule = 10; //CORS 配置规则列表，覆盖写入，修改时需先读出所有规则, 序列化后最大64kb
+	optional bytes crossregional = 11;//
+	optional uint32 multi_version_flag = 12; //bucket多版本 0：close 1：open 2.suspend ;0是初始状态，允许的状态转换方式： 0->1 0->2 1->2 2->1
+	repeated Tag tag = 13;
+	optional bytes ruleobj = 14; //生命周期
+	repeated LFAttr lfattr = 15; //低频类型属性
+	optional bool refer_able = 16;//refer是否启用 true：启用 false: 禁止  默认启用
+	optional bool emptyreferconfig = 17; //是否支持空refer true:允许， false：不允许  默认不允许
+	optional bool cname_able = 18; //是否启用cname true:启用 false: 禁止 默认启用 弃用
+}
+
+message BucketAttrModifyRsp
+{
+	//empty
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:查询目录属性，包括用户自定义属性和bucket的权限
+//- 注：只有用户、bucket的权限会生效
+//- 注: path的总长度限制为1024字节
+//- flag：按位识别
+//-	0x01:查询authority 1
+//-	0x02:查询biz_attr 2
+//-	0x04:查询whiterefer 4
+//- 0x08:查询cname 8
+//- 0x10: 查询blackrefer 16
+//- 0x20：查询reservedattr  32
+//- 0x40: 查询CorsRule 64
+//- 0x80: 查询ExtraAttr
+//- 0x100:查询多版本属性
+//- 0x200:查询tag属性
+//- 0x400:查询LFAttr
+//- 0x800:查询refer_able
+//- 0x1000:查询emptyreferconfig
+//- 0x2000:查询cname_able
+//- 0x4000: 查询websiteinfo
+//- 0x8000: 查询LockInfo
+//- 0x10000: 查询inventory
+//---------------------------------------------------------------------------------------------------------
+message BucketAttrQueryReq
+{
+	optional bytes path = 1;
+	optional uint32 flag = 2;	
+}
+
+message BucketAttrQueryRsp
+{
+	optional Authority auth = 1;
+	optional bytes biz_attr = 2;
+	optional uint32 ctime = 3;
+	optional uint32 mtime = 4;
+	repeated string cname = 5; //单个长度限制为256字节,bucket所有属性,数组长度10
+	repeated string whiterefer = 6; //单个长度限制为256字节,bucket所有属性,数组长度10， 白名单
+	repeated string blackrefer = 7; //单个长度限制为256字节,bucket所有属性,数组长度10， 黑名单
+	repeated ReservedAttr reservedattr = 8;//reservedattr属性
+	optional uint32 forbid = 9;//禁止访问标志，0:可以访问，0x01：禁止读访问，0x02：禁止写访问
+	repeated CorsRule corsrule = 10; //CORS 配置规则列表	
+	optional ExtraAttr extraattr = 11;//
+	optional uint32 multi_version_flag = 12;
+	repeated Tag tag = 13;
+	repeated LFAttr lfattr = 14;
+	optional bool refer_able = 15;
+	optional bool emptyreferconfig = 16;
+	optional bool cname_able = 17;//已废弃
+	optional bool nofile = 18;    //4.1专用
+	optional WebsiteInfo websiteinfo = 19;
+	optional bool visit_v4  = 20; //4.1Bucket专用
+	optional bytes bucketUin = 21;
+	optional NSlot nslot = 22;
+	optional LockInfo lockinfo = 23;
+	optional bytes inventory = 24; //Inventory序列化
+	optional Migrateinfo  migrateinfo = 25;
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:创建bucket下面的目录
+//- 注: path的总长度限制为1024字节
+//---------------------------------------------------------------------------------------------------------
+message DirCreateReq
+{
+	required bytes path = 1;                   //创建目录的全路径,以"/"分割,如"/a/b/c/"，最大1024字节
+	optional bytes biz_attr = 2;                //目录属性，业务端维护，最长5K
+}
+
+message DirCreateRsp
+{
+	required uint64 ctime = 1;       //新建目录的创建时间
+	optional ExtraAttr extraattr = 2;//
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:修改文件或者目录属性，通过末尾的/来判断是目录还是文件
+//- path的总长度限制为1024字节
+//- 修改扩展属性时，如果该属性已存在，则替换对应属性；如果属性不存在，则添加该属性
+//- 0x01 修改biz_attr属性
+//- 0x02 修改禁止访问标志
+//- 0x04 修改扩展属性
+//- 0x08 修改customheader属性, 覆盖修改
+//- 0x10 修改auth属性
+//- 0x20 设置sha属性 --割接使用--其余场景禁止使用！！！！！！！
+//- 0x40 修改storagetype --暂时禁止使用
+//---------------------------------------------------------------------------------------------------------
+message ObjAttrModifyReq
+{
+	required bytes path = 1;	
+	required uint32 flag = 2;//修改标志
+	optional bytes biz_attr = 3; //最长5K
+	optional uint32 forbid = 4;//禁止访问标志，禁止访问标志，0:可以访问，0x01：禁止读访问//，0x02：禁止写访问(停止使用)
+	repeated ReservedAttr reservedattr = 5;//扩展属性
+	repeated CustomHeader customheader = 6;//自定义Header
+	optional Authority auth = 7; //文件可以与bucket拥有不同的权限类型，已经设置过权限的文件如果想要撤销，直接赋值为0，则会采用bucket的权限
+	optional bytes real_sha = 8; //16进制
+	optional bytes version = 9;
+	optional bytes storagetype = 10;
+	optional uint32 mtime = 11;
+	optional bytes sk = 12; // sk 可以为sha 或者real_sha, 用于校验修改的文件
+}
+
+message ObjAttrModifyRsp
+{
+	optional ExtraAttr extraattr = 1;
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 内部专用; WORM上线后,CRR在上传时更新目标字段
+//- 0x01 修改biz_attr属性
+//- 0x02 修改ctime
+//- 0x04 修改mtime
+//- 0x08 修改forbie
+//- 0x10 修改扩展属性
+//- 0x20 修改auth属性
+//- 0x40 修改用户自定义header 覆盖修改
+//- 0x80 修改平台header  覆盖修改
+//- 0x100修改real_sha
+//- 0x200修改storage_type
+//- 0x400修改taglist; 仅cosquartzsvr设置对象tag接口会调用
+//- 0x800修改过期属性; 仅cosquartzsvr设置对象tag/入库时调用
+//---------------------------------------------------------------------------------------------------------
+message SpObjAttrModifyReq
+{
+	required bytes path = 1;
+	required uint32 flag = 2;
+	required bytes sk = 3; //修改密钥
+	optional bytes version = 4;
+	optional bytes biz_attr = 5; //最长5K
+	optional uint32 ctime = 6 [ default = 0 ];
+	optional uint32 mtime = 7 [ default = 0 ];
+	optional uint32 forbid = 8;//禁止访问标志,0:可以访问，0x01：禁止读访问，0x02：禁止写访问
+	repeated ReservedAttr reservedattr = 9;//扩展属性
+	optional Authority auth = 10;//访问属性
+	repeated CustomHeader customheader = 11;//自定义Header
+	repeated CustomHeader customheader_plat = 12;//用户定义Header
+	optional bytes real_sha = 13; //16进制
+	optional bytes storage_type = 14; //存储类型
+	repeated ObjTag taglist = 15; //修改taglist
+	optional ObjExpireAttr  objexpireattr = 16;//obj过期属性
+}
+
+message SpObjAttrModifyRsp
+{
+	
+}
+//---------------------------------------------------------------------------------------------------------
+//- 描述:查询文件或者目录属性
+//---------------------------------------------------------------------------------------------------------
+message ObjAttrQueryReq
+{
+	optional bytes path = 1;	
+	optional bytes version = 2; //版本号
+}
+
+message ObjAttrQueryRsp
+{
+	required bytes biz_attr = 1 [ default = "" ];
+	required uint32 ctime = 2 [ default = 0 ];
+	required uint32 mtime = 3 [ default = 0 ];
+	optional uint64 file_size = 4;
+	optional uint64 file_length = 5;
+	optional bytes sha = 6; //16进制
+	optional uint32 forbid = 7;//禁止访问标志,0:可以访问，0x01：禁止读访问，0x02：禁止写访问
+	repeated ReservedAttr reservedattr = 8;//扩展属性
+	optional Authority auth = 9;//访问属性
+	repeated CustomHeader customheader = 10;//自定义Header
+	optional bytes real_sha = 11; //16进制sha，用户真实的sha1
+	optional uint32 slicesize = 12;// 分片大小
+	optional uint32 type = 13;//文件类型 4:4.x  5:simple 6:append 7:multipart
+	optional bytes storage_type = 14;//存储类型
+	optional bytes version = 15;//版本号
+	optional bool delete_marker = 16; //查询的最新版本是否是delete_marker
+	optional bool islatest = 17; //是否是最新版本
+	optional bytes upload_source = 18; //文件上传来源
+	optional CasInfo casinfo = 19;
+	optional SseInfo sseinfo = 20;
+	optional uint32 tagnum = 21;
+	optional ObjExpireAttr objexpireattr = 22;
+	repeated ObjTag taglist = 23;
+	optional string fast_upload_key = 24; //copy使用
+	optional OwnerInfo owner = 25;
+	optional uint64 lock_expired_time = 26; //锁失效时间
+	optional LockInfo lockinfo = 27; //若对象维度LOCK存在, 则使用对象维度; 反之取bucket维度
+	optional bool is_v4 = 28;
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:删除目录或者bucket,不能删除文件
+//- 注: path的总长度限制为1024字节
+//---------------------------------------------------------------------------------------------------------
+message DeleteReq
+{
+	required bytes path = 1;//文件全路径，utf8编码，最大1024字节，删除目录时，需要以/结尾
+}
+
+message DeleteRsp
+{
+	//- empty
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:列表目录下的子元素或者前缀搜索
+//- prefix说明：
+//-		如果是拉取某个目录下的列表，prefix为父目录全路径；如果是前缀匹配，最后需要加上前缀
+//- offset参数说明：
+//		指定起始偏移位置
+//		1、为空时表示从头拉起；
+//		2、不为空时，表示从该偏移开始拉取，返回结果中会不包含该偏移；
+//---------------------------------------------------------------------------------------------------------
+message ListReq
+{    
+	required bytes prefix = 1;			//如果是列表目录，直接写目录全路径；如果是前缀匹配，需要在目录全路径最后加上前缀
+	required bytes offset = 2 [ default = "" ];		  //起始偏移,为空时从头拉取；不为空时从该marker开始拉取，返回结果中将包含该marker
+	required bytes delimiter = 3 [ default = "/"]; //目录分隔符，默认为/，最大1个字节,可以为空
+	required uint32 count = 4 [ default = 200 ];	//每次拉取的数目，最大1000
+	required bool flag = 5 [ default = false ]; //是否只返回metadata，true：只返回metadata，false：返回所有数据，具体见ObjItem定义
+	optional bool need_x_cos = 6 [ default = false ]; //是否返回用户自定义的CustormHeader;仅当flag==false时生效; 清单使用
+    optional bool need_tag   = 7 [ default = false ]; //是否返回obj tags;仅当flag==false时生效; 清单使用
+
+}
+//---------------------------------------------------------------------------------------------------------
+//-- 由于底层对返回结构有最大限制，可能导致返回的请求结果个数少于期望的个数，这种情况下，业务需要再次拉取
+//-- 比如：列表中有1000个，请求列表100个，但是返回少于100个，这是由于底层对返回的总结果大小限制为1MB造成
+//-- 注意列表结束标志，一直要拉取到列表结束标志为false时才能停止拉取,可能出现该标志为true，再次拉取结果为空的情况
+//---------------------------------------------------------------------------------------------------------
+message ListRsp
+{
+	repeated ObjItem objs  = 1;
+	optional bytes next_offset = 2 [ default = "" ];//下一次列表的起始位置
+	optional bool listover = 3 [ default = false ];//列表结束标志，true：结束；false：未结束
+} 
+
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:列表目录下的分块未完成的mutipart事件
+//- prefix说明：
+//-		如果是拉取某个目录下的列表，prefix为父目录全路径；如果是前缀匹配，最后需要加上前缀
+//- 使用说明
+// 1  如果objNameMaker参数未设置，忽略uploadKeymarker参数。
+// 2  如果objNameMaker参数和uploadKeymarker参数被设置
+//　　　所有Object名字的字典序大于objNameMaker参数值的Multipart事件
+//　　　Object名字等于objNameMaker参数值，但是Uploadkey比upload-key-marker参数值大的Multipart Uploads事件	
+//---------------------------------------------------------------------------------------------------------
+message ListMutiobjReq
+{    
+	required bytes prefix = 1;			//如果是列表目录，直接写目录全路径；如果是前缀匹配，需要在目录全路径最后加上前缀
+	required bytes objnamemarker = 2 [ default = "" ];		  //按照文件名字起始偏移返回
+	required bytes uploadkeymarker = 3 [ default = "" ];		  //按照uploadId起始偏移返回
+	required bytes delimiter = 4 [ default = ""]; //目录分隔符，默认为空，最大1个字节,可以为空
+	required uint32 count = 5 [ default = 200 ];	//每次拉取的数目，最大1000
+	optional bool flag = 6; //是否返回发起者uin false:不返回，true：返回；默认不返回
+}
+//---------------------------------------------------------------------------------------------------------
+//-- 由于底层对返回结构有最大限制，可能导致返回的请求结果个数少于期望的个数，这种情况下，业务需要再次拉取
+//-- 比如：列表中有1000个，请求列表100个，但是返回少于100个，这是由于底层对返回的总结果大小限制为1MB造成
+//-- 注意列表结束标志，一直要拉取到列表结束标志为false时才能停止拉取,可能出现该标志为true，再次拉取结果为空的情况
+//---------------------------------------------------------------------------------------------------------
+message ListMutiobjRsp
+{
+	repeated MutiObjItem objs  = 1;
+	optional bytes next_objnamemarker = 2 [ default = "" ];//下一次列表的起始位置
+	optional bytes next_uploadkeymarker = 3 [ default = "" ];//下一次列表的起始位置
+	optional bool listover = 4 [ default = false ];//列表结束标志，true：结束；false：未结束
+} 
+
+message ListObjVerReq
+{
+	required bytes prefix = 1; 
+	required bytes objnamemarker = 2 [ default = "" ];        //按照文件名字起始偏移返回
+	required bytes versionmarker = 3 [ default = "" ];          //按照version起始偏移返回
+	required bytes delimiter = 4 [ default = ""]; //目录分隔符，默认为空，最大1个字节,可以为空
+	required uint32 count = 5 [ default = 200 ];    //每次拉取的数目，最大1000
+	required bool flag = 6 [ default = false ]; //是否只返回metadata，true：只返回metadata，false：返回所有数据，具体见ObjItem定义
+	optional bool need_x_cos = 7 [ default = false ]; //是否返回用户自定义的CustormHeader;仅当flag==false时生效; 清单使用
+    optional bool need_tag   = 8 [ default = false ]; //是否返回obj tag;仅当flag==false时生效; 清单使用
+}
+message ListObjVerRsp
+{
+	repeated ObjItem objs  = 1;
+	optional bytes next_objnamemarker = 2 [ default = "" ];//下一次列表的起始位置
+	optional bytes next_versionmarker = 3 [ default = "" ];//下一次列表的起始位置
+	optional bool listover = 4 [ default = false ];//列表结束标志，true：结束；false：未结束
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:修改未完成分块文件属性
+//- path的总长度限制为1024字节
+//- 修改扩展属性时，如果该属性已存在，则替换对应属性；如果属性不存在，则添加该属性
+//- 0x01 修改biz_attr属性
+//- 0x02 修改禁止访问标志
+//- 0x04 修改扩展属性
+//- 0x08 修改customheader属性, 覆盖修改
+//- 0x10 修改auth属性
+//---------------------------------------------------------------------------------------------------------
+message UnfinObjAttrModifyReq
+{
+	required bytes path = 1;	
+	required bytes uploadid = 2;
+	required uint32 flag = 3;//修改标志
+	optional bytes biz_attr = 4; //最长5K
+	optional uint32 forbid = 5;//禁止访问标志，禁止访问标志，0:可以访问，0x01：禁止读访问，0x02：禁止写访问
+	repeated ReservedAttr reservedattr = 6;//扩展属性
+	repeated CustomHeader customheader = 7;//自定义Header
+	optional Authority auth = 8; //文件可以与bucket拥有不同的权限类型，已经设置过权限的文件如果想要撤销，直接赋值为0，则会采用bucket的权限
+}
+
+message UnfinObjAttrModifyRsp
+{
+	//empty
+}
+/*
+- 查询app的属性
+*/
+message AppAttrQueryReq
+{
+	required bytes appid = 1; //appid
+}
+message AppAttrQueryRsp
+{
+	repeated KeyPair keys = 1;
+	optional uint32 ctime = 2;
+	optional uint32 mtime = 3;
+}
+/*
+-- app ak、sk设置接口
+-- 注意：ak、sk的修改时整体修改
+*/
+message AppAttrModifyReq
+{
+	required bytes appid = 1; //appid
+	repeated KeyPair keys = 2;//密钥列表
+}
+message AppAttrModifyRsp
+{
+	//- empty
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:预览平台查询用户自定义属性及其他文件基本信息，私有bucket时需要携带签名
+//- 注: path的总长度限制为1024字节
+//---------------------------------------------------------------------------------------------------------
+message PreviewFileAttrQueryReq
+{
+	required bytes path = 1;
+	optional string sign = 2 [default = ""];//签名，默认为空
+	optional string refer = 3 [default = ""];//refer
+}
+
+message PreviewFileAttrQueryRsp
+{
+	optional bytes biz_attr = 1;
+	optional uint64 file_size = 2;
+	optional uint64 file_length = 3;
+	optional bytes sha = 4;//16进制
+	optional uint32 ctime = 5;
+	optional uint32 mtime = 6;
+	optional Authority auth = 7;//访问属性
+	optional bool preview = 8;//预览标志，true：开启，false：关闭，内部使用
+}
+
+
+//----------------------------------------------------
+// - 描述：修改文件、目录、bucekt的ctime、mtime
+// - 注：用于从3.0割接到4.0过程中保持ctime、mtime不变
+//----------------------------------------------------
+message ObjModTimeStampReq
+{
+	required bytes path = 1;
+	optional uint32 ctime = 2; //源文件ctime
+	optional uint32 mtime = 3; //源文件mtime
+}
+message ObjModTimeStampRsp
+{
+	//rsp empty
+}
+
+message delObj
+{
+	required bytes path = 1;
+	optional bytes version = 2;
+}
+message FileBatchDelReq
+{
+	repeated delObj obj = 1;//文件路径。
+}
+message FileDelState
+{
+	required bytes path = 1; //文件路径
+	required int32 retcode = 2; //每个文件删除结果错误码
+	required string retmsg = 3;//删除结果信息
+	optional bytes version = 4;
+	optional bool delete_marker = 5;  //标识是否操作deletemarker，true:操作对象是deletemarker（新增或删除）false:操作对象是非deletemarker
+	optional bool add_delmarker = 6 [default = false]; //用于标识是否新增deletemarker false:删除deletemarker  true：增加deletemarker
+}
+message FileBatchDelRsp
+{
+	repeated FileDelState delstate = 1;//文件删除结果
+	optional bytes extraattr = 2; //跨区域复制属性  ExtraAttr序列化 
+}
+
+message UploadDelmarkerReq
+{
+	required bytes path = 1;
+	required bytes version = 2;
+	optional bytes storage_type = 3 [ default = "Standard"];
+	optional bool is_ugc = 4; //true表示由用户操作产生的delmarker; 仅适用于delmarker;
+	optional bytes trsf_args  = 5; //存储TrsfArgs序列化后的结果
+}
+
+message UploadDelmarkerRsp
+{
+
+}
+
+
+//查询分块未完成对象索引
+message FileUnfinishAttrQueryReq
+{
+	required bytes path = 1;//文件全路径
+	optional bytes uploadid = 2; // 文件的uploadid, 为空时，查询普通文件
+}
+
+message FileUnfinishAttrQueryRsp
+{
+	required bytes sha = 1;//16进制
+	required uint32 mtime = 2;//创建时间
+	optional bytes storage_type = 3;
+	optional bytes uin = 4;
+	optional uint32 ctime = 5;
+	optional uint32 usr_slice_size = 6;
+	optional uint32 real_slice_size = 7;
+	optional uint64 file_size = 8;
+	optional bytes real_sha = 9;
+	optional storeinfo info = 10;
+	optional ClientCos.SseInfo sseinfo = 11; 
+	optional CasInfo casinfo = 12;
+}
+
+//生命周期使用; 每天一次性生效各种操作产生的存储量
+message ReduceLifecycleReq
+{
+	required bytes path = 1; //like "/APPID/BUCKET"
+	repeated Opinfo ops = 2;
+	required bytes sk   = 3; //鉴权
+}
+
+message ReduceLifecycleRsp
+{
+}
+
+//生命周期使用; 操作对象时若已不存在, 需要追回存储量信息; 新增字段来表示这部分的存储量
+message RetrieveLifecycleReq
+{
+	required bytes path     = 1; //like "/APPID/BUCKET/xyz"
+	required uint64 fsize   = 2;
+	required bytes sk       = 3; //鉴权
+	required bytes src_type = 4; //源存储介质
+	optional bytes dst_type = 5;
+	required Action op      = 6; //追回的操作类型
+}
+
+message RetrieveLifecycleRsp
+{
+}
+
+//---------------------------------------------------------------------------------------------------------
+//-  Part2. 存储结构体定义.
+//---------------------------------------------------------------------------------------------------------
+
+//--------------
+//待操作的计费信息
+//--------------
+enum Action
+{
+	INVALID = 0;                
+	Expiration = 1;	//过期删除，如果当前版本是个delete marker,则该文件不作用expiration,否则每天都会生成一个delete marker 
+	Transition = 2;  //冷热沉降
+	AbortIncompleteMultipartUpload = 3; //清理未上传完成的分块文件
+	
+	//历史版本只能有days, 而且days是从下一个版本的mtime开始,计算的是“成为历史版本的时间”
+	NoncurrentVersionExpiration = 4;	//历史版本的过期删除
+	NoncurrentVersionTransition = 5;	//历史版本的冷热沉降
+}
+
+message Opinfo
+{
+	required Action op         = 1;	//有效计费类型;
+	optional uint64 file_count = 2;
+	optional uint64    storage = 3;
+	optional bytes    src_type = 4; //源存储介质; 仅降冷操作使用
+	optional bytes    dst_type = 5; //目标存储介质; 仅降冷操作使用
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:权限类别.
+//---------------------------------------------------------------------------------------------------------
+enum Authority
+{
+	Invalid	= 0;							//非法
+    WRPrivate = 1;							//私有读写
+	WPrivateRPublic = 2;					//私有写公有读
+}
+
+//--------------
+//新增属性key枚举
+//--------------
+enum ReservedAttrKey
+{
+	invalidkey	= 0; //非法
+	outsidesourcehost = 1; //外部源站域名,为空时表示无效，bucket所有
+	preview = 2;  //预览标志，1：开启，0：关闭， 空：无效，其他非法，bucket所有
+	browerexec = 3; //浏览器直接执行标志，1：直接执行，0：不执行，空：无效，其他非法，bucket所有
+	custom404flag = 4; //自定义404页面开关，1：打开自定义页面，0：关闭自定义页面, bucket 所有
+	custom404page = 5; //自定义404页面文件名，必须在 bucket 根目录下, bucket 所有
+	custom403flag = 6; //自定义403页面开关，1：打开自定义页面，0：关闭自定义页面, bucket 所有
+	custom403page = 7; //自定义403页面文件名，必须在 bucket 根目录下, bucket 所有
+	indexpageflag = 8; //index索引开关，1：打开，访问任意目录时，默认优先匹配该目录下的 index.html, 其次为 index.htm, 如无则返回404，0：关闭, bucket 所有
+	file_md5 = 9; //文件MD5，业务上传时指定，文件所有
+	cors_flag = 10; //CORS 开关，1、打开，0、关闭，bucket 所有
+	outsidesource_flag = 11; //源站开关，1、打开，文件不存在时将会进行离线下载，0、关闭, 默认为打开, bucket 所有
+	outsidesourcehost_bak = 12;//外部源站i备份域名
+}
+//--------------
+//新增属性 key-value
+//--------------
+message ReservedAttr
+{
+	required ReservedAttrKey key = 1;//key
+	required bytes value = 2 [ default = ""];//value
+}
+
+//自定义 Header x-cos-meta-自定义内容
+message CustomHeader
+{
+	required bytes key = 1;
+	required bytes value = 2;
+}
+
+//CORS配置信息
+message CorsRule
+{
+	required bytes origin = 1; 			//必填，可以设置多个, 逗号分割
+	required bytes methods = 2; 		//必填，多选，PUT GET POST DELETE HEAD, 逗号分割
+	optional bool  credentials = 3; 	//选填，默认false。
+	optional bytes allow_headers = 4; 	//选填，可以设置多个, 逗号分割
+	optional bytes expose_headers = 5; 	//选填，可以设置多个, 逗号分割
+	optional int32 max_age = 6; 		//必填，缓存时间（单位：秒）
+	optional bytes id = 7;              
+}
+
+message Tag
+{
+	required bytes key = 1;
+	required bytes value = 2;
+}
+
+message ObjTag
+{
+	required bytes key = 1;
+	optional bytes value = 2;
+}
+
+enum NSlot
+{
+	TYPE_INVALID = 0;
+	TYPE_DEFAULT = 1; //未开启高QPS
+	TYPE_32 = 2;      //开启高QPS且为32份
+	TYPE_256 = 3;
+}
+
+message LockInfo
+{
+	optional uint32 days = 1; //days仅支持延期; [1day,100year]
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:属性.
+//- 备注:所有业务兼容
+//---------------------------------------------------------------------------------------------------------
+message AppAttr
+{	                                                   
+	optional bytes biz_attr = 1; 	  
+	optional uint32 type = 2; //1:app；2:bucket；3：目录；4：文件
+	optional bytes sha = 3;//16进制
+	optional Authority auth = 4;
+	optional bytes path = 5; //存放原路径
+	repeated KeyPair keys = 6;
+	repeated string cname = 7; //单个长度限制为256字节,bucket所有属性,数组长度10
+	repeated string whiterefer = 8; //单个长度限制为256字节,bucket所有属性,数组长度10，白名单
+	repeated string blackrefer = 9; //单个长度限制为256字节,bucket所有属性,数组长度10，黑名单
+	optional uint32 usr_slice_size = 10 [ default = 0 ];//分片大小
+	optional uint32 forbid = 11 [ default = 0 ];//禁止访问标志，0:可以访问，0x01：禁止读访问，0x02：禁止写访问
+	repeated ReservedAttr reservedattr = 12;//扩展属性
+	optional uint32 real_slice_size = 13 [ default = 0 ];//实际落地分片大小
+	repeated CustomHeader customheader = 14; //自定义 Header, 文件所有
+	repeated CorsRule corsrule = 15; // CORS 规则，bucket 所有
+	optional bytes real_sha = 16; //16进制
+	optional ExtraAttr extraattr = 17;//
+	optional uint64 ctime_ms = 18; //ms级别 用于简单上传
+	optional bytes version = 19;
+	optional uint32 multi_version_flag = 20; //bucket多版本开关 1：open 0:close 2.suspend ;0是初始状态，允许的状态转换方式： 0->1 0->2 1->2 2->1
+	optional uint32 multi_version_hisflag = 21; //bucket多版本历史操作标识 0:未打开过 1：曾经open
+	repeated Tag tag = 22;//bucket tag
+	optional uint32 bucketnum= 23;//app属性专用
+	optional uint32 idcnum = 24;//老上传接口专用
+	repeated LFAttr lfattr = 25;//低频类型属性
+	optional bool refer_able = 26;//refer是否启用 true:启用  false:禁止启用
+	optional bool emptyreferconfig = 27; //是否支持空refer true:允许， false：不允许  默认不允许
+	optional bool cname_able  = 28; //cname 是否启用 true:启用 false:禁止启用 默认启用   停止使用
+	optional bytes upload_source =  29; //文件上传来源
+	optional uint64 ctime_ms_temp = 30; //跨区域复制专用
+	repeated CustomHeader customheader_plat = 31; //平台内部专用
+	optional bytes uin = 32; //用于分块上传记录发起者uin
+	optional bool nofile = 33; //高并发专用，true:4.0没有文件 false:4.0有文件 该字段设置后才可开启多版本
+	optional CasInfo casinfo = 34;
+	optional SseInfo sseinfo = 35;
+	optional WebsiteInfo websiteinfo = 36;
+	repeated ObjTag taglist = 37;
+	optional ObjExpireAttr objexpireattr = 38;
+	optional CamAuth camauth = 39;
+	optional bool is_v4 = 40; 	 //v4->s3的类型为true 
+	optional bool visit_v4 = 41; //4.1 bucket专用 true:文件不存在时访问4.0  false：文件不存在时不访问4.0
+	optional bool is_chunk = 42; //true表示chunk上传
+	optional OwnerInfo objOwner = 43;    //Obj Owner; 若空表示对象与Bucket Owner一致
+	optional OwnerInfo bucketOwner = 44; //Bucket Owner; 一定非空
+	repeated AclInfo acls   = 45; //Obj ACLs	
+	optional NSlot nslot = 46; //hash槽位个数
+	optional bool is_ugc = 47; //true表示由用户操作产生的delmarker; 仅适用于delmarker; 
+	optional LockInfo lockinfo = 48; //bucket属性
+	optional uint32 mtime_temp = 49; //仅trsf使用分块上传时使用; 在INIT时初始化, Finish时若存在则覆盖mtime
+	optional bytes inventory = 50;    //清单属性
+	optional uint32 inventory_mtime = 51; //清单属性设置/修改时间
+	optional Migrateinfo  migrateinfo = 52; //4.0->4.2信息
+}
+
+message KeyPair
+{
+	optional string accesskey = 1;
+	optional string secretkey = 2;
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:当前对象信息
+//---------------------------------------------------------------------------------------------------------
+message ObjItem
+{
+	optional bytes name = 1;
+	optional uint64 file_size = 3;
+	optional uint64 upload_size = 4;
+	optional uint64 ctime = 5;
+	optional uint64 mtime = 6;
+	//列表时，设置flag为false时返回，兼容老接口问题
+	optional bytes biz_attr = 7;
+	optional bytes sha = 8; //16进制
+    optional Authority auth = 9;
+	repeated ReservedAttr reservedattr = 10;//扩展属性
+	optional bytes real_sha = 11;
+	optional bytes version = 12;
+	optional uint64 ctime_ms = 13;
+	optional bytes storage_type = 14;
+	optional bool delete_marker = 15;
+	optional bool islatest = 16;
+	optional uint32 type = 17;
+	repeated ObjTag taglist = 18;
+	optional ObjExpireAttr objexpireattr = 19;
+	repeated CustomHeader customheader =  20; //清单使用; 平台内部使用的Header	
+	optional SseInfo sseinfo = 21;
+	repeated CustomHeader x_cos_customheader = 22; //清单使用; 用户自定义Header; 
+	optional uint32 forbid = 23; //禁止访问标志，0:可以访问，0x01：禁止读访问，0x02：禁止写访问
+	optional bool is_ugc = 24; //true表示由用户操作产生的delmarker
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:当前对象信息
+//---------------------------------------------------------------------------------------------------------
+message MutiObjItem
+{
+	optional bytes name = 1;
+	optional bytes uploadkey = 3;
+	optional uint32 ctime = 4;
+	optional uint32 mtime = 5;
+	optional bytes storage_type = 6;
+	optional bytes uin = 7;
+	optional uint64 file_size = 8;
+}
+
+message DelObjExpireAttr
+{
+	required uint32 op = 1;	//操作类型
+	optional bool isLatest = 2;		   //该对象是否是最新版本
+	optional bool isDeleteMarker = 3;  //该对象是否是delete marker
+	optional bytes next_version = 4; //如果是多版本对象，且操作的是历史版本的删除，需要返回下一个版本的version
+	optional uint32 next_version_ctime = 5; //如果是多版本对象，且操作的是历史版本的删除，需要返回下一个版本的ctime
+	optional uint64 next_version_seed = 6; //即原来的ctime_ms 根据此字段生成version,用来比较版本大小
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:仅用于过期删除操作，如果mtime校验不通过会返回正确的mtime
+//---------------------------------------------------------------------------------------------------------
+message DelExpireFileReq
+{
+	required bytes path = 1;
+	required uint32 mtime = 2;
+	optional bool switch_flag = 3; //默认为false; 若为true则使用新计费模式
+	optional DelObjExpireAttr expire_attr = 4;
+}
+
+message DelExpireFileRsp
+{
+	optional uint32 mtime = 1; //如果传入的mtime不等则返回正确mtime
+}
+
+message StorageTypeAttr
+{
+	required uint32 min_del_days = 1; //最低删除天数
+	optional uint32 min_file_size = 2 [ default = 64000]; //最小对齐大小 默认64KB
+}
+
+message LFAttr
+{
+	required bytes storagetype = 1;
+	required StorageTypeAttr storagetypeattr = 2;
+}
+
+message FileDelReq
+{
+	required bytes path = 1;//文件路径
+	optional bytes uploadid = 2; // 分块上传为完成文件删除
+	optional bool switch_flag = 3; //默认为false; 若为true则使用新计费模式
+	optional bool isExpireReq = 4; //true表示由生命周期调用
+	optional DelObjExpireAttr expire_attr = 5;
+}
+
+message FileDelRsp
+{
+
+}
+
+//用于过期删除--打开多版本 
+//本质上增加deletemarker
+message ExpireFileDelNoVerReq
+{
+	required bytes path = 1;
+	optional bool switch_flag = 2; //默认为false; 若为true则使用新计费模式
+	optional DelObjExpireAttr expire_attr = 3;
+}
+
+message ExpireFileDelNoverRsp
+{
+	required bytes version = 1; //新增deletemarker版本号
+	required uint32 mtime = 2; //返回实际的mtime
+}
+
+//用于过期删除
+message ExpireFileDelVerReq
+{
+	required bytes path = 1;
+	required bytes version = 2;
+	required uint32 mtime = 3;
+	optional bool switch_flag = 4; //默认为false; 若为true则使用新计费模式
+	optional DelObjExpireAttr expire_attr = 5;	
+}
+
+message ExpireFileDelVerRsp
+{
+	required bool delete_marker = 1;
+	required uint32 mtime = 2;
+}
+
+//----------------------------------------------------------
+//-内部接口用于设置4.1打开多版本时保证4.0无数据、设置4.1是否可访问4.0
+//-根据flag的值修改不同的字段
+//-0x01 修改nofile
+//-0x02 修改visit_v4
+//----------------------------------------------------------
+message SetBucketPriAttrReq
+{
+	required bytes path = 1;
+	required uint32 flag = 2;
+	optional bool nofile = 3;
+	optional bool visit_v4 = 4;
+}
+
+message SetBucketPriAttrRsp
+{
+
+}
+
+message FileDownToCASReq
+{
+	required bytes path = 1;
+	required bytes archive_id = 2;
+	required bytes sk = 3;  //原文件filekey
+	required uint32 check_mtime = 4;//用于校验
+	optional bytes version = 5;//bucket打开过多版本时，这个是必填字段
+	optional bool switch_flag = 6; //默认为false; 若为true则使用新计费模式
+}
+
+message FileDownToCASRsp
+{
+	optional bytes casfilekey = 1;
+}
+
+//---------------------------------------------------------------------------------------------------------
+//-老版本: status==1: statuse->2 修改expired_time；status==2：拒绝；status==3：只修改expired_time 
+//-新版本: 校验开关; 只修改expired_time
+//---------------------------------------------------------------------------------------------------------
+message CasObjAttrModifyReq
+{
+	required bytes path = 1;
+	optional bytes version = 2;
+	required uint64 expired_time = 3;
+	optional CASRestoreTier restore_tier = 4;
+}
+
+message CasObjAttrModifyRsp
+{
+
+}
+
+message CasFileRecoverDelReq
+{
+	required bytes path = 1;
+	optional bytes version = 2;
+}
+
+message CasFileRecoverDelRsp
+{
+	required uint64 expired_time = 1;
+}
+
+message CasObjRestoreErrReq
+{
+	required bytes path = 1;
+	optional bytes version = 2;
+}
+
+message CasObjRestoreErrRsp
+{
+
+}
+
+//cas调用; 表示延时回热完成
+message CasObjRestoreFinReq
+{
+	required bytes path = 1;
+	optional bytes version = 2;
+	optional bytes sk = 3; //原文件filekey, 避免回热过程中被覆盖
+	optional bytes storage_type = 4; //回热目标存储介质
+}
+
+message CasObjRestoreFinRsp
+{
+
+}
+//---------------------------------------------------------------------------------------------------------
+//- 描述:查询文件或者目录属性
+//- 注: 内部使用
+//---------------------------------------------------------------------------------------------------------
+message SpObjAttrQueryReq
+{
+	required bytes path = 1;	
+	optional bytes version = 2; //版本号	
+}
+message SpObjAttrQueryRsp
+{
+	required bytes biz_attr = 1 [ default = "" ];
+	required uint32 ctime = 2 [ default = 0 ];
+	required uint32 mtime = 3 [ default = 0 ];
+	optional uint64 file_size = 4;
+	optional uint64 file_length = 5;
+	optional bytes sha = 6; //16进制
+	optional uint32 forbid = 7;//禁止访问标志,0:可以访问，0x01：禁止读访问，0x02：禁止写访问
+	repeated ReservedAttr reservedattr = 8;//扩展属性
+	optional Authority auth = 9;//访问属性
+	repeated CustomHeader customheader = 10;//自定义Header
+	optional bytes real_sha = 11; //16进制sha，用户真实的sha1
+	optional uint32 slicesize = 12;// 分片大小
+	optional uint32 type = 13;//文件类型 4:4.x  5:simple 6:append 7:multipart
+	optional bytes storage_type = 14;//存储类型
+	optional bytes version = 15;//版本号
+	optional bool delete_marker = 16; //查询的最新版本是否是delete_marker
+	optional bool islatest = 17; //是否是最新版本
+	optional bytes upload_source = 18; //文件上传来源
+	optional CasInfo casinfo = 19;
+	optional SseInfo sseinfo = 20;
+	optional uint32 tagnum = 21;
+	optional ObjExpireAttr objexpireattr = 22;
+	repeated ObjTag taglist = 23;
+	optional uint64 version_seed = 24; //仅生命周期使用; 即原来的ctime_ms
+	optional bool is_ugc = 25; //true表示由用户操作产生的delmarker
+	optional OwnerInfo owner = 26;
+	optional bool is_cas = 27; //true表示为归档直传文件
+	repeated AclInfo acls = 28; 
+	optional uint64 lock_expired_time = 29; //锁失效时间
+	optional bool is_v4 = 30;
+}
+//---------------------------------------------------------------------------------------------------------
+//-注：内部使用
+//---------------------------------------------------------------------------------------------------------
+message ObjModStorageTypeReq
+{
+	required bytes path = 1;
+	required bytes storagetype = 2;
+	optional bytes version = 3;
+	optional bool switch_flag = 4; //默认为false; 若为true则使用新计费模式
+	optional bytes sk = 5;
+	optional uint32 check_mtime = 6;
+}
+
+message ObjModStorageTypeRsp
+{
+
+}
+
+enum SseType
+{
+	SSE_DEFAULT = 0;
+	SSE_S3 = 1;
+	SSE_KMS = 2;
+	SSE_C = 3;
+}
+
+message SseInfo
+{
+	optional SseType ssetype = 1; //加密方式
+	optional bytes algorithm = 2; //加密逻辑
+	optional bytes ssec_key = 3;           //密钥的base64编码
+	optional bytes ssec_key_md5 = 4;	   //密钥MD5
+	optional bytes kms_id = 5;  	       //用户的KMS_ID
+	optional bytes kms_context = 6; 	   //用户kms加密上下文
+	optional bytes kms_datakey = 7; 	   //密文base64; public
+	optional bytes kms_datakey_encryp = 8; //密文加密串; private
+	optional bytes sse_etag = 9; //ETAG+SSE_KEY
+}
+
+message ErrorCodeReturned
+{
+	required uint32 errorcode = 1;
+	optional bytes protocol = 2; //只能为https
+	optional bytes replacekeywith = 3;//路径替换规则 ,不能为空 
+	optional bytes hostname = 4; //替换为外部的host
+}
+
+message PrefixReturned
+{
+	required bytes keyprefix = 1;
+	optional bytes protocol = 2; //只能为https
+	optional bytes replacekeyprefixwith = 3; //前缀替换规则
+	optional bytes replacekeywith = 4;// 路径替换规则  前缀、路径替换规则必须设一个
+	optional bytes hostname = 5;//替换为外部的host
+	optional bytes httpredirectcode = 6;//响应码
+}
+
+message PrefixAndErrcodeReturned
+{
+//重定向条件，以下两个条件至少指定一个
+    optional uint32 errorcode = 1;  //重定向错误码，如400
+	optional bytes keyprefix = 2;  //重定向前缀
+//重定向动作，以下五个动作至少指定一个
+	optional bytes protocol = 3; //只能为http/https
+	optional bytes hostname = 4;  //host替换规则
+	optional bytes replacekeyprefixwith = 5; //前缀替换规则,不能同时指定路径替换规则
+	optional bytes replacekeywith = 6;// 路径替换规则,不能同时指定前缀替换规则
+    optional bytes httpredirectcode = 7; //响应码     
+}
+
+message RoutingRule
+{
+	repeated ErrorCodeReturned errorcodereturned = 1;
+	repeated PrefixReturned prefixreturned = 2;
+	repeated PrefixAndErrcodeReturned prefixanderrcodereturned = 3;
+}
+
+// cosv5 静态网站配置
+message WebsiteInfo
+{
+	required bytes indexdocument = 1;
+	optional bytes protocol = 2;//只能为https
+	optional bytes errordocument = 3;
+	optional RoutingRule routingrule = 4;
+	optional bytes hostname = 5; //全站替换host
+}
+
+message SetBucketWebsiteInfoReq
+{
+	required bytes path = 1; // /appid/bucket/
+	required uint32 setflag = 2;  //0：删除website配置  1：设置website配置
+	optional WebsiteInfo websiteinfo = 3;
+}
+
+message SetBucketWebsiteInfoRsp
+{
+
+}
+
+//---------------------------------------------------------------------------------------------------------
+//- 描述:是否cam鉴权
+//---------------------------------------------------------------------------------------------------------
+enum CamAuth
+{
+	NoUse = 0;  							//默认值 对是否cam鉴权无影响
+    IsCamAuth = 1;							//走cam鉴权
+	NoCamAuth = 2;				        	//不走cam鉴权
+}
+message SetCamAttrReq
+{
+	required bytes path = 1; // /appid/bucket/   /appid/
+	required CamAuth camauth = 2; //IsCamAuth or NoCamAuth
+}
+
+message SetCamAttrRsp
+{
+
+}
+//只查询bucket
+message BucketCamAuthQueryReq
+{
+	required bytes path = 1; // /appid/bucket/
+}
+
+//------------------------------------------------------------------------------------------------------
+//-true - appid:IsCamAuth bucket:非NoCamAuth 或者bucket:IsCamAuth;
+//------------------------------------------------------------------------------------------------------
+message BucketCamAuthQueryRsp
+{
+	required bool iscamauth = 1; //转换后  
+}
+
+message CamAtuhItem
+{
+	required bytes bucketpath = 1; ///appid/bucket/
+	required bool iscamauth = 2; //转换后
+}
+
+//查询 appid及下面所有的bucket
+message AppCamAuthQueryReq
+{
+	required bytes appid = 1;
+	required bytes next_bucket = 2; //第一次填空
+}
+
+//每次最多返回2K
+message AppCamAuthQueryRsp
+{
+	required CamAuth camauth = 1; //appid的规则
+	required bytes next_bucket = 2;
+	repeated CamAtuhItem item = 3; //appid下面的规则 转换后
+	required bool isover = 4 [ default = false ];//列表结束标志，true：结束；false：未结束
+}
+
+message CgiArgs
+{
+	optional AuthInfo auth_info = 1; //访问者信息及上下文校验信息; 若不包含, 不走校验流程直接继续后续流程
+	optional OwnerInfo owner = 2; //对象Owner信息; 仅上传接口中使用;
+	repeated AclInfo acls = 3; //上传对象时携带的ACL
+}
+
+message CgiParams
+{
+	optional GetObjectExtend get_object_extend = 1;
+	optional CompleteMultiUploadExtend complete_multi_upload_extend = 2;
+}
+
+message GetObjectExtend
+{
+	optional bool check_refer = 1 [ default = true ]; //true表示需要校验refer
+}
+
+message CompleteMultiUploadExtend
+{
+	optional int32 min_part_size = 1;  //Byte,CGI指定分块最小大小,区间为[100K, 1MB]; 仅complete时使用
+}
+
+message TrsfArgs
+{
+	repeated CustomHeader customheader_plat = 1;//内部使用的headers
+	optional uint32 src_ctime = 2; //源对象ctime	
+	optional uint32 mtime = 3 [ default = 0 ];
+	optional uint32 forbid = 4;//禁止访问标志,0:可以访问，0x01：禁止读访问，0x02：禁止写访问
+	repeated ReservedAttr reservedattr = 5;//扩展属性
+	optional Authority auth = 6;//访问属性
+}
+
+//enum perm
+//- 0x01: Read
+//- 0x02: ReadAcp
+//- 0x04: WriteAcp
+//- 0x08: FullControl
+//
+message AclInfo 
+{
+    optional bytes uin = 1; //被授权uin
+    optional int32 perm = 2; 
+}
+
+message AuthInfo
+{
+	optional bytes reqUin	  = 1; //访问者根账户uin
+	optional bool contextPass = 2; //上下文是否通过: true表示通过; 
+	optional bool needAcl	  = 3; //是否需要校验ACL: true表示需要;
+}
+
+message OwnerInfo
+{
+	optional bytes uin = 1; //根账户uin
+}
+
+//校验对象ACL;
+message CheckObjAclReq
+{
+	required bytes path    = 1;
+	optional bytes version = 2;
+	optional int32 perm = 3;
+}
+
+message CheckObjAclRsp
+{
+}
+
+//设置ACL; 覆盖写
+message SetObjAclReq
+{
+	required bytes path    = 1;
+	optional bytes version = 2;
+	repeated AclInfo acls  = 3; //以此为基准
+}
+
+message SetObjAclRsp
+{
+}
+
+//获取ACL;
+message GetObjAclReq
+{
+	required bytes path = 1;
+	optional bytes version = 2;
+}
+
+message GetObjAclRsp
+{
+	repeated AclInfo acls = 1;
+	optional OwnerInfo owner = 2; //对象Owner信息
+}
+
+//bucketUin
+message SetBucketUinReq
+{
+	required bytes path = 1; // /appid/bucket/
+	optional OwnerInfo bucketOwner = 2; //Bucket Owner信息
+}
+
+message SetBucketUinRsp
+{
+}
+
+message GetBucketUinReq
+{
+	required bytes path = 1; // /appid/bucket/	 
+}
+
+message GetBucketUinRsp
+{
+	optional OwnerInfo bucketOwner = 2; //Bucket Owner信息
+}
+
+//bucketLock
+message SetBucketLockReq
+{
+	required bytes path = 1; // /appid/bucket/
+	optional LockInfo lockinfo = 2;
+}
+
+message SetBucketLockRsp
+{
+}
+
+message GetBucketLockReq
+{
+	required bytes path = 1; // /appid/bucket/	 
+}
+
+message GetBucketLockRsp
+{
+	optional LockInfo lockinfo = 1;
+}
+
+//bucketInventory
+message SetBucketInventoryReq
+{
+	required bytes path 	 = 1; // /appid/bucket/	 
+	optional bytes inventory = 2; //Inventory序列化
+}
+message SetBucketInventoryRsp
+{
+}
+
+message GetBucketInventoryReq
+{
+	required bytes path = 1; // /appid/bucket/	 
+}
+message GetBucketInventoryRsp
+{
+	optional bytes inventory = 1; //Inventory序列化
+}
+
+message  COSTransToCASReq
+{
+	required bytes path = 1;
+	optional bytes version = 2;
+	optional bool switch_flag = 3; //默认为false; 若为true则使用新计费模式:计费预减
+	optional bytes sk = 4;
+	optional uint32 check_mtime = 5;
+}
+
+message COSTransToCASRsp
+{
+
+}
+
+// similar with ListObjVerReq
+// ListReq/ListMutiobjReq/ListObjVerReq share with the same DirctReq
+message ListDirectReq
+{
+    enum ListType {
+        LIST = 0;    // List当前版本
+        LISTVER = 1; // List 多版本，一期暂未完全实现、功能同LIST
+        LISTUF  = 2; // List 未完成分块列表
+    }
+    optional string prefix = 1; 
+	optional string marker = 2 [ default = "" ];       //按照文件名字起始偏移返回
+    optional string submarker = 3 [ default = "" ];    //version/uploadid起始偏移返回
+    optional string delimiter = 4 [ default = "" ];    //目录分隔符，默认为空，最大1个字节,可以为空
+	optional uint32 count     = 5 [ default = 200 ];   //每次拉取的数目，最大1000
+	optional bool flag        = 6 [ default = false ]; //是否只返回metadata，true：只返回metadata，false：返回所有数据，具体见ObjItem定义
+    optional ListType type    = 7 [ default = LIST ];
+
+    optional string bad_ip    = 10;  // 重试时告诉master上一次访问Node的IP，首次请求为空
+    optional uint32 bad_port  = 11;  // 同上
+} 
+
+message ListDirectRsp
+{
+    required string ip   = 1; 
+    optional uint32 port = 2; 
+    optional int32 term  = 3; // cache还剩多少秒无效，大于等于0表示命中cache，小于0表示未命中cache
+}
+
+message MigrateFinFileReq
+{
+	required bytes path = 1; //cos全路径 /appid/bucket/xxx
+	optional bytes version = 2; //仅用于多版本
+}
+
+message MigrateFinFileRsp
+{
+	optional bytes filekey = 1;
+	optional bytes uuid = 2; //如果4.2已经存在则不会返回uuid
+	optional uint32 filetype = 3;
+}
+
+message MigrateUnFinFileReq
+{
+	required bytes path = 1;
+	optional bytes uploadid = 2;
+}
+
+message MigrateUnFinFileRsp
+{
+	
+}
+
+message SetMigrateReq
+{
+	optional bytes path = 1; // /appid/bucket/
+	optional MigrateStatus status = 2;
+}
+
+message SetMigrateRsp
+{
+
+}
+
+message DelNoHashFileReq
+{
+	required bytes path = 1;
+	optional bytes uuid = 2; //删除4.2已经存在的文件则不需要带uuid
+}
+
+message DelNoHashFileRsp
+{
+
+}

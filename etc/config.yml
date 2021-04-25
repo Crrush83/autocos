@@ -1,0 +1,43 @@
+#YMAL
+server_address:
+    upload:
+        ip: "10.59.184.107"
+        port: "80"
+    download:
+        ip: "10.59.184.107"
+        port: "80"
+    access:
+        ip: "9.86.161.186"
+        port: "46000"
+    trans:
+        ip: "9.27.151.156"
+        port: "49000"
+    list:
+        ip: "9.86.161.186"
+        port: "46000"
+
+CosTransferReqMsg:
+    clientip: "9.134.186.82"
+    PutObjCopyReq_body:
+        srcpath: "/12332101/paumk/just_test.txt"   
+        srcidc: "ap-shanghai"
+        storagetype: "MAZ_Standard"
+        dstpath: "/12332101/paumk/just_test1.txt"
+        dstidc: "ap-shanghai"
+
+ObjAttrQueryReq_body:
+    path: "/12332101/paumk/just_test.txt"
+    version: ""
+
+
+SimpleUpload:
+    srcpath: "/12332101/paumk/just_test.txt"
+    storageclass: "MAZ_Standard"
+    filename: "../file/tesa"  
+SimpleDownload:
+    srcpath: "/12332101/paumk/just_test1.txt"
+    storageclass: "MAZ_Standard"
+    filename: "../file/download_file"  
+ListReq:
+    prefix: "/12332101/paumk/just_test.txt"
+    offset:	""

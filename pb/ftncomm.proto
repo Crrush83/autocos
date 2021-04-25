@@ -1,0 +1,42 @@
+package FTN;
+
+message StorageAppMsg
+{
+	required uint32 seq = 1;
+	required AppMsg body = 2;
+}
+
+message AppMsg
+{
+	enum Type
+	{
+		FtnNugcReqMsg = 5;
+		FtnNugcRspMsg = 6;
+
+		photo_album_FtnNugcReqMsg = 7;
+		photo_album_FtnNugcRspMsg = 8;
+
+		FtnAccessReqMsg = 10;
+		FtnAccessRspMsg = 11;
+
+		FtnAccessHttpReqMsg = 12;
+		FtnAccessHttpRspMsg = 13;
+		
+		FtnDeleteReqMsg = 14;
+		FtnDeleteRspMsg = 15;
+
+		CosQuartzsvrReqMsg = 16;	//定时任务服务器
+		CosQuartzsvrRspMsg = 17;
+
+		CosTransferReqMsg = 18;//cos复制
+		CosTransferRspMsg = 19;
+	
+		CosTegProxyReqMsg = 20;
+		CosTegProxyRspMsg = 21;
+		
+	}
+	required Type type = 1;
+
+	extensions 100 to 10000;
+}
+

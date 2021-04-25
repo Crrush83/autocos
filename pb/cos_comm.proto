@@ -1,0 +1,179 @@
+//package CosComm;
+
+message ShaMainRecord
+{
+	required uint32 ref = 1;
+	required uint32 ctime = 2;
+	required uint32 mtime = 3;
+	required uint64 fsize = 4;
+	required bool hitflag = 5;	//表明文件是否曾经被引用过
+	optional uint32 type = 7; //1:sha 2:append 3:multipart
+	repeated idcitem  idclist = 8;
+	optional bool is_chunk = 9; //默认为false; 表示对象是否为chunk上传 
+
+}
+
+message CasKeyRecord
+{
+
+	required uint32 ref = 1;
+	required uint32 ctime = 2;
+	required uint32 mtime = 3;
+	required uint64 fsize = 4;
+	required bytes  archive_id = 5;
+	optional uint32 type = 6; //
+
+}
+
+message PartRecord
+{
+	required bytes sha = 1; //分块的sha
+	required uint64 fsize = 2;
+	required bool isfinished = 3;
+	required uint32 ctime = 4;
+	optional uint64 offset= 5 [ default = 0 ];
+	optional uint32 id = 6 [ default = 0 ];
+	optional uint32 mtime = 7;
+	optional uint32 slicesize = 8;
+	optional bytes real_sha = 9;
+}
+
+message CosDataIndex
+{
+	optional uint32 chid = 1;
+	optional uint32 fid = 2;
+	optional uint32 datasize = 3;
+	optional uint64 offset = 4;
+	optional uint32 ctime = 5;
+	optional string dataflag = 6; //datamd5 datasha	
+	optional uint32 crc_num = 7;
+	optional bytes cachekey = 8;
+}
+
+message CosDataIndexRsp
+{
+	optional bytes datakey = 1;
+	optional bytes version = 2;	//分片记录在Tssd的版本号
+	optional uint32 chid = 3;
+	optional uint32 fid = 4;
+	optional uint32 storeid = 7;
+	optional uint32 datasize = 8;
+	optional uint32 crc_num = 9;  // cache新增
+	optional bytes cachekey = 10; // cache新增
+}
+
+message CosPartItem
+{
+	required uint32 partnum = 1;
+	required bytes sha = 2;
+}
+
+
+message CosPartdeleteItem
+{
+	required bool isfinish = 1;
+	required bytes sha = 2;
+}
+
+message delstorinfo
+{
+	optional storeinfo info = 1;
+	optional uint32 id = 2;
+}
+
+message storeinfo
+{
+	optional uint32 tfs_cl5_modid = 1;
+	optional uint32 tfs_cl5_cmid = 2;
+	optional uint32 lavadb_cl5_modid = 3;
+	optional uint32 lavadb_cl5_cmid = 4;
+	optional uint32 lavadb_tid = 5;
+	optional uint32 lavadb_cid = 6;
+	optional uint32 idcnum = 7;	 //存储介质类型
+	optional bool  isprefix = 8; //分片索引是否补上前缀; 对于已有的存储介质, 不加; 对于新增的存储介质, 在filekey前补上前缀		   	
+	optional uint32 isusetfscl5 = 9;       //同机部署
+	optional bool use_local_tfsproxy = 10; //同机部署
+	optional bytes name = 11; //storage_type
+	optional bool use_cache = 12; // true: 使用下述L5信息，否则不开启cache
+    optional uint32 cache_cl5_modid = 13;
+    optional uint32 cache_cl5_cmdid = 14;
+}
+
+//cache专用
+message cacheinfo
+{
+	optional uint32 lavadb_cl5_modid = 1;
+	optional uint32 lavadb_cl5_cmdid = 2;
+	optional uint32 lavadb_tid = 3;
+	optional uint32 lavadb_cid = 4;
+	optional uint32 idcnum = 5;
+}
+
+message idcitem
+{
+	required uint32 idc = 1;
+	required uint32 ctime = 2;
+	required uint32 uploadstate = 3;
+}
+
+message sha1storeinfo
+{
+	optional bytes sha = 1;
+	optional storeinfo info  = 2;
+	optional cacheinfo cache_info = 3; //cache专用
+}
+enum cos_store_type
+{
+	Standard = 0;
+	Standard_IA = 1;
+
+}
+
+
+//begin coscachecontrol
+message CosUploadCacheData
+{
+ optional uint32 datasize = 1;
+ optional uint64 offset = 2;
+ optional uint32 ctime = 3;
+ optional bytes value = 4;
+}
+
+message CosTfsIndex
+{
+	optional uint32 chid = 1;
+	optional uint32 fid = 2;
+	optional uint32 datasize = 3;
+	optional uint64 offset = 4;
+	optional uint32 ctime = 5;
+}
+
+message CheckTfsinfo
+{
+	optional uint32 tfs_cl5_modid = 1;
+	optional uint32 tfs_cl5_cmid = 2;
+	optional uint32 idcnum = 3;
+	optional bool  isprefix = 4;
+	repeated CosTfsIndex datalist = 5;
+}
+
+message CosLavaDBIndex
+{
+
+	optional bytes keyhash = 1;
+	optional bytes keyrange = 2;
+	optional uint32 datasize = 3;
+	optional uint64 offset = 4;
+	optional uint32 ctime = 5;
+}
+
+message CheckLavaDBinfo
+{
+	optional uint32 lavadb_cl5_modid = 1;
+	optional uint32 lavadb_cl5_cmid = 2;
+	optional uint32 lavadb_tid = 3;
+	optional uint32 lavadb_cid = 4;
+	repeated CosLavaDBIndex datalist = 5;
+}
+//end coscachecontrol
+

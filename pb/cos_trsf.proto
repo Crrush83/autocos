@@ -1,0 +1,246 @@
+import "ftncomm.proto";
+import "cosv4_client.proto";
+package FTN;
+//对AppMsg进行扩展 那么AppMsg又是什么！
+extend AppMsg
+{
+	optional CosTransferReqMsg CosTransferReqMsg_body = 118;
+	optional CosTransferRspMsg CosTransferRspMsg_body = 119;
+}
+//COS传输请求消息
+message CosTransferReqMsg 
+{
+//客户端ip
+//有且仅有一个
+	required string clientip = 1;
+	//请求id
+	//optional：不超过一个字段
+	optional string request_id = 2;
+
+//我猜这是一个为了标注消息类型的枚举
+	enum SubType
+	{
+		Invalid = 0;
+		FileTrsfReq = 1;
+		TaskProgressReq = 2;
+		PutObjCopyReq = 3;
+		PartCopyReq = 4;
+		PartCopyFinishReq = 5;
+	}
+
+	required SubType sub_type = 10;
+	optional FileTrsfReq  FileTrsfReq_body = 11;//跨园区复制请求, part copy 请求
+        optional TaskProgressReq  TaskProgressReq_body = 12;
+	optional PutObjCopyReq  PutObjCopyReq_body = 13;//put obj copy 请求
+	optional PartCopyReq  PartCopyReq_body = 14;//part copy 请求
+	optional PartCopyFinishReq  PartCopyFinishReq_body = 15;//part copy 请求
+}
+//传输请求
+message CosTransferRspMsg 
+{
+	required int32 retcode = 1 ;
+	required string retmsg = 2 ;
+	enum SubType
+	{
+		Invalid = 0;
+		FileTrsfRsp = 1;
+		TaskProgressRsp = 2;
+		TransferNotify = 3;
+		TransferNotifyRsp = 4;
+		PutObjCopyRsp = 5;
+		PartCopyRsp = 6;
+	}
+	//枚举的这些类型 是用一个字段表明是什么消息
+	optional SubType sub_type = 10;
+	//然后用可选的字段详细记录结构
+	optional FileTrsfRsp  FileTrsfRsp_body = 11;
+	optional TaskProgressRsp  TaskProgressRsp_body = 12;
+	optional TransferNotify TransferNotify_body = 13;
+	optional TransferNotifyRsp TransferNotifyRsp_body = 14;
+	optional PutObjCopyRsp PutObjCopyRsp_body = 15;
+	optional PartCopyRsp PartCopyRsp_body = 16;
+}
+
+//CosTransferRspMsg-optional:FileTrsfReq
+//文件传输请求 会是干嘛呢？
+//复制？备份？
+message FileTrsfReq
+{
+	//源路径
+	required string srcpath = 1;
+	//源数据中心 internet data center罢了！
+	required string srcidc = 2;
+	//存储类型
+	required string storagetype = 3;
+	required string dstpath = 4;
+	required string dstidc = 5;
+	required bool delsrc = 6;    //处理完成后源bucket的对象是否需要删除，为了安全期间,第一阶段不做删除
+	required bool set_replication = 7;
+	optional uint64 srcstart_range = 8;
+	optional uint64 srcend_range = 9;
+	optional uint64 dststart_range = 10;//废弃
+	required bool notifyflag = 11 [default = false];    //结束请求后是否需要回调，默认不需要
+	optional string notifyip = 12;  //处理完成后上报的IP
+	optional uint32 notifyport = 13; //处理完后需要上报的PORT
+	optional uint32 notifysmcd = 14; //处理完成后需要上报的smcdid
+	optional string version = 15; //version字段用于跨区域复制，与set_replication配套使用，set_replication=true时，必须有版本号,为false时,用于put_object_copy，版本号不是必须的
+	optional uint32 retry_times = 16 [default=1]; //失败后重试的次数
+	optional uint32 platform_type = 17 [default=1]; //架构类型 1:4.0架构 2:4.1架构
+	//有点像tcp哈
+	optional string dst_uploadkey = 18; //如果有此字段，表示为part copy，否则认为是put_obj_copy
+	optional uint64 dst_block_num = 19; //part copy 作为目标的第几个块
+	optional TrsfSseInfo sseinfo = 20;
+	optional ClientCos.UploadAttr uploadattr = 21;
+	optional uint32 src_platform_type = 22 [default=1]; //架构类型 1:4.0架构 2:4.1架构
+	optional string part_verify_content = 23;//分块copy的校验内容，主要是为了跨区域复制并发校验使用
+	optional MultiRegionList region_list = 24;
+	optional uint32 multi_region_seq = 25;//用于多az复制的时候，防止并发。发送给costrsf的请求是顺序发送，在请求中加上seq，seq从0开始，一次递增1，比如从上海复制到tj,gz , 顺序发给costrsf，那第一个发送给tj的就从0开始，后面发给gz的就是1，依此类推
+	optional bytes cgi_args = 26;//cgi的acl下沉的参数
+}
+
+message MultiRegionList
+{
+	repeated string regions = 1;
+}
+//和文件传输有什么区别？
+message PutObjCopyReq 
+{
+	required string srcpath = 1;
+	required string srcidc = 2;
+	required string storagetype = 3;
+	required string dstpath = 4;
+	required string dstidc = 5;
+	required string src_sha = 6;
+	required uint64 file_size = 7;
+	required uint64 slice_size = 8;
+	required uint32 file_type = 9;
+	optional string src_version = 10; 
+	optional bytes src_obj_attr = 11;//cosaccess 查询的结果，序列化以后，直接透传
+	optional uint32 platform_type = 12 [default=1]; //架构类型 1:4.0架构 2:4.1架构
+	optional TrsfSseInfo sseinfo = 13;
+	optional ClientCos.UploadAttr uploadattr = 14;
+	optional string uin = 15;
+	optional bool is_modify_cmtime = 16 [default=false]; //存量数据迁移，有可能要修改目标的ctime 和mtime，由这个选项来控制
+	optional uint32 src_platform_type = 17 [default=1]; //架构类型 1:4.0架构 2:4.1架构
+	optional bytes cgi_args = 18;
+}
+//我才一次复制有一个PutObjCopy和若干个PartCopyReq
+message PartCopyReq
+{
+        required string srcpath = 1;
+        required string srcidc = 2;
+        required string dstpath = 3;
+        required string dstidc = 4;
+        required uint64 src_file_size = 5;
+        optional uint32 platform_type = 6 [default=1]; //架构类型 1:4.0架构 2:4.1架构
+        optional string src_version = 7; 
+        required uint64 srcstart_range = 8;
+        required uint64 srcend_range = 9;
+        required string dst_uploadkey = 10; //如果有此字段，表示为part copy，否则认为是put_obj_copy
+        required uint64 dst_block_num = 11; //part copy 作为目标的第几个块
+	optional uint32 src_platform_type = 12 [default=1]; //架构类型 1:4.0架构 2:4.1架构
+	optional TrsfSseInfo sseinfo = 13;
+}
+//每一个ParCopy对应一个ParCopyFinish是吧
+message PartCopyFinishReq
+{
+	required bytes srcfile_attr = 1;
+	required string ukey = 2;
+	required string finish_json_message = 3;
+        required string srcpath = 4;
+        required string srcidc = 5;
+        required string dstpath = 6;
+        required string dstidc = 7;
+	required string storagetype = 8;
+        optional string version = 9; 
+	optional uint32 platform_type = 10 [default=1]; //架构类型 1:4.0架构 2:4.1架构
+	optional uint32 retry_times = 11 [default=3]; //失败后重试的次数
+	optional uint32 delay_time = 12;
+	optional MultiRegionList region_list = 13;
+
+}
+
+message TrsfSseInfo
+{
+    optional uint32 src_type = 1; // 0（未加密），1（SSE-S3加密），2（SSE-KMS加密），3（SSE-C加密）
+    optional string src_algorithm = 2;  // 该值目前固定为字符串AES256
+    optional uint32 dst_type = 3; // 0（未加密），1（SSE-S3加密），2（SSE-KMS加密），3（SSE-C加密）
+    optional string dst_algorithm = 4;  // 该值目前固定为字符串AES256
+    optional SseCInfo src_ssec = 5;
+    optional SseCInfo dst_ssec = 6;
+    optional KmsInfo src_kms = 7;
+    optional KmsInfo dst_kms = 8;
+}
+
+message SseCInfo
+{
+    optional string ssec_key = 7;
+    optional string ssec_key_md5 = 8;
+}
+
+message KmsInfo
+{
+    optional string kms_key_id = 9;
+    optional bytes kms_context = 10;
+    optional string kms_datakey = 11;
+    optional bytes kms_datakey_encryp = 12;
+}
+
+message FileTrsfRsp 
+{
+	required string task_key = 1;
+}
+
+message PutObjCopyRsp 
+{
+	required string task_key = 1;
+}
+
+message PartCopyRsp 
+{
+	required string task_key = 1;
+	optional ClientCos.SseInfo srcsseinfo = 2;
+}
+
+message TransferNotify 
+{
+	required string task_key = 1;
+	required string srcpath = 2;
+	required string dstpath = 3;
+	required string dstidc = 4;
+	required uint64 task_ctime = 5;
+	required uint64 task_endtime = 6;
+	required uint32 task_progress = 7;
+}
+
+message TransferNotifyRsp
+{
+	required string task_key = 1;
+}
+
+message TaskProgressReq
+{
+	required string task_key = 1;	
+}
+
+message TaskProgressRsp
+{
+	required uint32 task_progress = 1;
+	required string srcpath = 2;
+	required string dstpath = 3;
+	required string dstidc = 4;
+	required string storagetype = 5;
+	required uint64 task_ctime = 6;
+	optional uint64 srcstart_range = 7;
+	optional uint64 srcend_range = 8;
+	optional uint64 dststart_range = 9;//废弃
+	optional string dst_version = 10;
+	optional string dst_sk = 11;
+	optional string dst_uploadkey = 12;
+	optional string dst_ctime = 13;
+	optional uint64 dst_block_num = 14;
+	optional TrsfSseInfo sseinfo = 15;   //服务端加密信息
+
+
+}
+

@@ -1,0 +1,12 @@
+HTTP/1.1 200 OK
+Cos-sha1: 037add58784e946464182b5e7e915c656fb72e10
+x-cos-hash-crc64ecma: 5777144242740658529
+Etag: 037add58784e946464182b5e7e915c656fb72e10
+x-cos-cross-verification: 037add58784e946464182b5e7e915c656fb72e10
+x-cos-storage-class: MAZ_Standard
+x-cos-filesize: 28
+x-cos-origin-filesize: 0
+x-cos-version-id: MTg0NDUxMjkxMzYzOTkyNDgxNzE
+Content-Type: text/octet
+Content-Length: 0
+
